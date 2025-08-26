@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageType, MessageRole } from '../types';
-import { sendMessageStream, startChat } from '../services/geminiService';
+import { sendMessageStream } from '../services/geminiService';
 import Message from './Message';
 import QuickActionButton from './QuickActionButton';
 import CrisisButton from './CrisisButton';
@@ -27,14 +26,6 @@ const ChatWindow: React.FC = () => {
         scrollToBottom();
     }, [messages, isLoading]);
 
-    useEffect(() => {
-        try {
-            startChat(); // Initialize chat session on component mount
-        } catch (e: any) {
-            setError(e.message);
-        }
-    }, []);
-
     const handleSend = useCallback(async (messageText: string) => {
         if (!messageText.trim() || isLoading) return;
 
@@ -43,7 +34,9 @@ const ChatWindow: React.FC = () => {
             role: MessageRole.USER,
             content: messageText,
         };
-        setMessages(prev => [...prev, userMessage]);
+        
+        const newMessages = [...messages, userMessage];
+        setMessages(newMessages);
         setInput('');
         setIsLoading(true);
         setError(null);
@@ -54,10 +47,20 @@ const ChatWindow: React.FC = () => {
         setMessages(prev => [...prev, { id: aiMessageId, role: MessageRole.MODEL, content: '' }]);
 
         try {
-            const stream = await sendMessageStream(messageText);
+            // Filter out the initial welcome message for the API call
+            const historyForApi = newMessages.filter(m => m.id !== 'initial' && m.id !== aiMessageId);
+            const stream = await sendMessageStream(historyForApi, messageText);
+            
+            const reader = stream.getReader();
+            const decoder = new TextDecoder();
             let streamedContent = '';
-            for await (const chunk of stream) {
-                streamedContent += chunk.text;
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    break;
+                }
+                streamedContent += decoder.decode(value, { stream: true });
                 setMessages(prev => prev.map(msg =>
                     msg.id === aiMessageId ? { ...msg, content: streamedContent } : msg
                 ));
@@ -71,7 +74,7 @@ const ChatWindow: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading]);
+    }, [isLoading, messages]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
