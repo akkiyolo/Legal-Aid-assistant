@@ -29,26 +29,25 @@ const ChatWindow: React.FC = () => {
     const handleSend = useCallback(async (messageText: string) => {
         if (!messageText.trim() || isLoading) return;
 
+        // Capture the history for the API call *before* adding the new user message to the state.
+        const historyForApi = messages.filter(m => m.id !== 'initial');
+
         const userMessage: MessageType = {
             id: Date.now().toString(),
             role: MessageRole.USER,
             content: messageText,
         };
         
-        const newMessages = [...messages, userMessage];
-        setMessages(newMessages);
+        const aiMessageId = (Date.now() + 1).toString();
+        // Add both the user message and the AI placeholder to the UI at once.
+        setMessages(prev => [...prev, userMessage, { id: aiMessageId, role: MessageRole.MODEL, content: '' }]);
+
         setInput('');
         setIsLoading(true);
         setError(null);
         setShowCrisisResources(false);
 
-        const aiMessageId = (Date.now() + 1).toString();
-        // Add a placeholder for the AI response
-        setMessages(prev => [...prev, { id: aiMessageId, role: MessageRole.MODEL, content: '' }]);
-
         try {
-            // Filter out the initial welcome message for the API call
-            const historyForApi = newMessages.filter(m => m.id !== 'initial' && m.id !== aiMessageId);
             const stream = await sendMessageStream(historyForApi, messageText);
             
             const reader = stream.getReader();

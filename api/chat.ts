@@ -7,13 +7,35 @@ export const config = {
   runtime: 'edge',
 };
 
+// Common headers for CORS. This allows the frontend to communicate with the API.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+
 export default async function handler(req: Request) {
+  // Handle CORS preflight requests. The browser sends this before the actual POST request.
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
+    return new Response('Method Not Allowed', {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
+    });
   }
 
   if (!process.env.API_KEY) {
-    return new Response('API_KEY environment variable not set', { status: 500 });
+    return new Response('API_KEY environment variable not set', {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
+    });
   }
 
   try {
@@ -55,12 +77,15 @@ export default async function handler(req: Request) {
     });
 
     return new Response(readableStream, {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      headers: { ...corsHeaders, 'Content-Type': 'text/plain; charset=utf-8' },
     });
 
   } catch (error) {
     console.error('Error in /api/chat:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return new Response(`Error processing request: ${errorMessage}`, { status: 500 });
+    return new Response(`Error processing request: ${errorMessage}`, {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
+    });
   }
 }
