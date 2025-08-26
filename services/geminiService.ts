@@ -1,13 +1,14 @@
 import { MessageType } from '../types';
+import { Language } from '../i18n';
 
-export const sendMessageStream = async (history: MessageType[], message: string): Promise<ReadableStream<Uint8Array>> => {
+export const sendMessageStream = async (history: MessageType[], message: string, language: Language): Promise<ReadableStream<Uint8Array>> => {
     try {
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ history, message }),
+            body: JSON.stringify({ history, message, language }),
         });
 
         if (!response.ok) {

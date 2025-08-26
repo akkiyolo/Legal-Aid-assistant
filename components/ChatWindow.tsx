@@ -5,11 +5,18 @@ import Message from './Message';
 import QuickActionButton from './QuickActionButton';
 import CrisisButton from './CrisisButton';
 import { SendIcon } from './Icons';
-import { QUICK_ACTION_TOPICS, CRISIS_RESOURCES } from '../constants';
+import { CRISIS_RESOURCES } from '../constants';
+import { translations, Language } from '../i18n';
 
-const ChatWindow: React.FC = () => {
+interface ChatWindowProps {
+    language: Language;
+}
+
+const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
+    const t = translations[language];
+    
     const [messages, setMessages] = useState<MessageType[]>([
-        { id: 'initial', role: MessageRole.MODEL, content: 'Hello! How can I help you today? Please select a topic below or type your question.' }
+        { id: 'initial', role: MessageRole.MODEL, content: t.initialMessage }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +24,11 @@ const ChatWindow: React.FC = () => {
     const [showCrisisResources, setShowCrisisResources] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Reset initial message when language changes
+    useEffect(() => {
+        setMessages([{ id: 'initial', role: MessageRole.MODEL, content: t.initialMessage }]);
+    }, [language, t.initialMessage]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,7 +41,6 @@ const ChatWindow: React.FC = () => {
     const handleSend = useCallback(async (messageText: string) => {
         if (!messageText.trim() || isLoading) return;
 
-        // Capture the history for the API call *before* adding the new user message to the state.
         const historyForApi = messages.filter(m => m.id !== 'initial');
 
         const userMessage: MessageType = {
@@ -39,7 +50,6 @@ const ChatWindow: React.FC = () => {
         };
         
         const aiMessageId = (Date.now() + 1).toString();
-        // Add both the user message and the AI placeholder to the UI at once.
         setMessages(prev => [...prev, userMessage, { id: aiMessageId, role: MessageRole.MODEL, content: '' }]);
 
         setInput('');
@@ -48,7 +58,7 @@ const ChatWindow: React.FC = () => {
         setShowCrisisResources(false);
 
         try {
-            const stream = await sendMessageStream(historyForApi, messageText);
+            const stream = await sendMessageStream(historyForApi, messageText, language);
             
             const reader = stream.getReader();
             const decoder = new TextDecoder();
@@ -68,12 +78,12 @@ const ChatWindow: React.FC = () => {
             const errorMessage = e.message || 'An unknown error occurred.';
             setError(errorMessage);
             setMessages(prev => prev.map(msg =>
-                msg.id === aiMessageId ? { ...msg, content: `Error: ${errorMessage}` } : msg
+                msg.id === aiMessageId ? { ...msg, content: `${t.errorPrefix} ${errorMessage}` } : msg
             ));
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading, messages]);
+    }, [isLoading, messages, language, t.errorPrefix]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -81,8 +91,8 @@ const ChatWindow: React.FC = () => {
     };
     
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow-xl">
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+        <div className="flex flex-col h-full bg-slate-900">
+            <div className="flex-1 overflow-y-auto p-1 pr-4 space-y-6">
                 {messages.map((msg) => (
                     <Message key={msg.id} message={msg} />
                 ))}
@@ -93,11 +103,11 @@ const ChatWindow: React.FC = () => {
             </div>
 
             {showCrisisResources && (
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/20">
-                    <h3 className="text-lg font-bold text-red-800 dark:text-red-300 mb-2">Immediate Help Resources</h3>
+                <div className="p-4 border-t border-slate-700 bg-red-900/50">
+                    <h3 className="text-lg font-bold text-red-300 mb-2">{t.crisisTitle}</h3>
                     <ul className="space-y-2">
                         {CRISIS_RESOURCES.map(resource => (
-                             <li key={resource.name} className="text-sm text-gray-700 dark:text-gray-300">
+                             <li key={resource.name} className="text-sm text-slate-300">
                                 <strong>{resource.name}:</strong> Call {resource.number} {resource.website !== 'N/A' && `(Website: ${resource.website})`}
                              </li>
                         ))}
@@ -106,35 +116,35 @@ const ChatWindow: React.FC = () => {
             )}
 
             {error && (
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-200">
-                    <p><strong>Error:</strong> {error}</p>
+                <div className="p-4 border-t border-slate-700 bg-red-900/50 text-red-200">
+                    <p><strong>{t.errorPrefix}</strong> {error}</p>
                 </div>
             )}
 
-            <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+            <div className="p-1 pt-4">
                 {messages.length <= 1 && (
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                        {QUICK_ACTION_TOPICS.map((topic, index) => (
+                        {t.quickActions.map((topic, index) => (
                             <QuickActionButton key={index} text={topic} onClick={() => handleSend(topic)} />
                         ))}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+                <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-slate-800 rounded-full p-2">
                     <CrisisButton onClick={() => setShowCrisisResources(prev => !prev)} />
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Type your legal question here..."
-                        className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        placeholder={t.inputPlaceholder}
+                        className="flex-1 p-2 bg-transparent focus:outline-none text-slate-100 placeholder-slate-400"
                         disabled={isLoading}
                     />
                     <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:bg-blue-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors duration-200"
+                        className="bg-slate-700 text-white p-3 rounded-full hover:bg-slate-600 disabled:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
                     >
-                        <SendIcon className="w-6 h-6" />
+                        <SendIcon className="w-5 h-5" />
                     </button>
                 </form>
             </div>

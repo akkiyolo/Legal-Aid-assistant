@@ -1,0 +1,92 @@
+export type Language = 'en' | 'es' | 'fr' | 'zh' | 'hi';
+
+export const languages: { code: Language; name: string }[] = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'fr', name: 'Français' },
+    { code: 'zh', name: '中文' },
+    { code: 'hi', name: 'हिन्दी' },
+];
+
+export const translations = {
+    en: {
+        title: "Legal Aid Assistant",
+        tagline: "Your First Step Towards Justice",
+        disclaimerTitle: "Important Disclaimer",
+        disclaimerText: "This is general legal information, not legal advice. Every situation is unique - you should consult with a qualified lawyer for your specific case. This tool is not a substitute for professional legal counsel.",
+        initialMessage: "Hello! How can I help you today? Please select a topic below or type your question.",
+        inputPlaceholder: "Type your legal question here...",
+        crisisTitle: "Immediate Help Resources",
+        errorPrefix: "Error:",
+        quickActions: [
+            "I have a problem with my landlord.",
+            "My employer isn't paying me correctly.",
+            "I need information about divorce or child custody.",
+            "I'm facing debt collection issues.",
+        ],
+    },
+    es: {
+        title: "Asistente de Ayuda Legal",
+        tagline: "Tu Primer Paso Hacia la Justicia",
+        disclaimerTitle: "Aviso Importante",
+        disclaimerText: "Esta es información legal general, no asesoramiento legal. Cada situación es única: debe consultar con un abogado calificado para su caso específico. Esta herramienta no sustituye el consejo legal profesional.",
+        initialMessage: "¡Hola! ¿Cómo puedo ayudarte hoy? Por favor, selecciona un tema a continuación o escribe tu pregunta.",
+        inputPlaceholder: "Escribe tu pregunta legal aquí...",
+        crisisTitle: "Recursos de Ayuda Inmediata",
+        errorPrefix: "Error:",
+        quickActions: [
+            "Tengo un problema con mi arrendador.",
+            "Mi empleador no me está pagando correctamente.",
+            "Necesito información sobre divorcio o custodia de hijos.",
+            "Estoy enfrentando problemas de cobro de deudas.",
+        ],
+    },
+    fr: {
+        title: "Assistant d'Aide Juridique",
+        tagline: "Votre Premier Pas Vers la Justice",
+        disclaimerTitle: "Avis Important",
+        disclaimerText: "Ceci est une information juridique générale, pas un conseil juridique. Chaque situation est unique - vous devriez consulter un avocat qualifié pour votre cas spécifique. Cet outil ne remplace pas un conseil juridique professionnel.",
+        initialMessage: "Bonjour! Comment puis-je vous aider aujourd'hui? Veuillez sélectionner un sujet ci-dessous ou taper votre question.",
+        inputPlaceholder: "Tapez votre question juridique ici...",
+        crisisTitle: "Ressources d'Aide Immédiate",
+        errorPrefix: "Erreur:",
+        quickActions: [
+            "J'ai un problème avec mon propriétaire.",
+            "Mon employeur ne me paie pas correctement.",
+            "J'ai besoin d'informations sur le divorce ou la garde d'enfants.",
+            "Je fais face à des problèmes de recouvrement de créances.",
+        ],
+    },
+    zh: {
+        title: "法律援助助理",
+        tagline: "迈向正义的第一步",
+        disclaimerTitle: "重要免责声明",
+        disclaimerText: "这是一般性法律信息，而非法律建议。每个情况都是独特的 - 您应就您的具体案件咨询合格的律师。本工具不能替代专业的法律顾问。",
+        initialMessage: "你好！我今天能帮你什么？请选择以下主题或输入您的问题。",
+        inputPlaceholder: "在此输入您的法律问题...",
+        crisisTitle: "紧急帮助资源",
+        errorPrefix: "错误:",
+        quickActions: [
+            "我与房东有问题。",
+            "我的雇主没有正确支付我的工资。",
+            "我需要关于离婚或子女监护权的信息。",
+            "我正面临债务催收问题。",
+        ],
+    },
+    hi: {
+        title: "कानूनी सहायता सहायक",
+        tagline: "न्याय की ओर आपका पहला कदम",
+        disclaimerTitle: "महत्वपूर्ण अस्वीकरण",
+        disclaimerText: "यह सामान्य कानूनी जानकारी है, कानूनी सलाह नहीं। हर स्थिति अद्वितीय होती है - आपको अपने विशिष्ट मामले के लिए एक योग्य वकील से परामर्श करना चाहिए। यह उपकरण पेशेवर कानूनी सलाह का विकल्प नहीं है।",
+        initialMessage: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ? कृपया नीचे दिए गए विषय का चयन करें या अपना प्रश्न टाइप करें।",
+        inputPlaceholder: "अपना कानूनी प्रश्न यहां टाइप करें...",
+        crisisTitle: "तत्काल सहायता संसाधन",
+        errorPrefix: "त्रुटि:",
+        quickActions: [
+            "मुझे अपने मकान मालिक से समस्या है।",
+            "मेरा नियोक्ता मुझे सही तरीके से भुगतान नहीं कर रहा है।",
+            "मुझे तलाक या बच्चे की हिरासत के बारे में जानकारी चाहिए।",
+            "मैं कर्ज वसूली की समस्याओं का सामना कर रहा हूँ।",
+        ],
+    },
+};

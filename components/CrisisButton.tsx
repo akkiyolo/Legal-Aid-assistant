@@ -11,7 +11,7 @@ const CrisisButton: React.FC<CrisisButtonProps> = ({ onClick }) => {
         <button
             onClick={onClick}
             type="button"
-            className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors duration-200"
+            className="bg-red-600 text-white flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-colors duration-200"
             aria-label="Show crisis resources"
         >
             <LifeBuoyIcon className="w-6 h-6" />

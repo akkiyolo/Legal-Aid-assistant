@@ -1,22 +1,27 @@
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_PROMPT } from "../constants";
 import { MessageType, MessageRole } from "../types";
+import { Language } from "../i18n";
 
-// This is required for Vercel Edge Functions
 export const config = {
   runtime: 'edge',
 };
 
-// Common headers for CORS. This allows the frontend to communicate with the API.
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+const languageMap: Record<Language, string> = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  zh: "Mandarin Chinese",
+  hi: "Hindi",
+};
 
 export default async function handler(req: Request) {
-  // Handle CORS preflight requests. The browser sends this before the actual POST request.
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
@@ -39,11 +44,10 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { history, message } = (await req.json()) as { history: MessageType[], message: string };
+    const { history, message, language = 'en' } = (await req.json()) as { history: MessageType[], message: string, language: Language };
 
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-    // Transform message history to the format required by the Gemini API
     const contents = history
       .filter(msg => msg.role === MessageRole.USER || msg.role === MessageRole.MODEL)
       .map(msg => ({
@@ -51,18 +55,19 @@ export default async function handler(req: Request) {
         parts: [{ text: msg.content }],
       }));
     
-    // Add the latest user message
     contents.push({ role: 'user', parts: [{ text: message }] });
     
+    const languageInstruction = `\n\nIMPORTANT: You must provide your response in ${languageMap[language]}.`;
+    const localizedSystemPrompt = SYSTEM_PROMPT + languageInstruction;
+
     const stream = await ai.models.generateContentStream({
         model: 'gemini-2.5-flash',
         contents: contents,
         config: {
-            systemInstruction: SYSTEM_PROMPT,
+            systemInstruction: localizedSystemPrompt,
         },
     });
 
-    // Create a streaming response to send back to the client
     const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
