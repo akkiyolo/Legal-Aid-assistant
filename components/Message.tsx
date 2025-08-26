@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { MessageType, MessageRole } from '../types';
 import { UserIcon, AiIcon, CopyIcon, CheckIcon } from './Icons';
 
@@ -15,30 +17,6 @@ const TypingIndicator: React.FC = () => (
         <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
     </div>
 );
-
-const MessageContent: React.FC<{ content: string }> = ({ content }) => {
-    // A more robust regex to handle lists and bolding
-    const parts = content.split(/(\n- .*)/).filter(Boolean);
-
-    return (
-        <>
-            {parts.map((part, index) => {
-                if (part.startsWith('\n- ')) {
-                    const listItems = part.trim().split('\n- ').filter(Boolean);
-                    return (
-                        <ul key={index} className="list-disc list-inside my-2 space-y-1">
-                            {listItems.map((item, itemIndex) => (
-                                <li key={itemIndex} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>') }} />
-                            ))}
-                        </ul>
-                    );
-                }
-                return <p key={index} className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: part.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>') }} />;
-            })}
-        </>
-    );
-};
-
 
 const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
     const [isCopied, setIsCopied] = useState(false);
@@ -58,16 +36,24 @@ const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
 
     const Icon = isUser ? UserIcon : AiIcon;
     const iconContainerClasses = isUser ? "ml-3" : "mr-3";
+    const iconAnimation = isUser ? "animate-slide-fade-in-right" : "animate-slide-fade-in-left";
+    const bubbleAnimation = isUser ? "animate-slide-fade-in-right" : "animate-slide-fade-in-left";
 
     return (
-        <div className={`flex items-start max-w-full group animate-fade-in ${containerClasses}`}>
+        <div className={`flex items-start max-w-full group ${containerClasses}`}>
              {!isUser && (
-                <div className={`${iconContainerClasses} flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center`}>
+                <div className={`${iconContainerClasses} flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center opacity-0 ${iconAnimation} [animation-delay:0.1s]`}>
                     <Icon className="w-5 h-5 text-slate-300" />
                 </div>
             )}
-            <div className={`relative px-4 py-3 max-w-xl md:max-w-2xl ${bubbleClasses}`}>
-                {isLoading || (message.content === '' && isModel) ? <TypingIndicator /> : <MessageContent content={message.content} />}
+            <div className={`relative px-4 py-3 max-w-xl md:max-w-2xl opacity-0 ${bubbleClasses} ${bubbleAnimation} [animation-delay:0.2s]`}>
+                {isLoading || (message.content === '' && isModel) ? <TypingIndicator /> : (
+                    <div className="markdown-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {message.content}
+                        </ReactMarkdown>
+                    </div>
+                )}
                 
                 {isModel && !isLoading && message.content && (
                      <button
@@ -80,7 +66,7 @@ const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                 )}
             </div>
             {isUser && (
-                <div className={`${iconContainerClasses} flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center`}>
+                <div className={`${iconContainerClasses} flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center opacity-0 ${iconAnimation} [animation-delay:0.1s]`}>
                     <Icon className="w-5 h-5 text-blue-400" />
                 </div>
             )}

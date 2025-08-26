@@ -49,10 +49,10 @@ Remember: Your goal is to empower users with knowledge and connect them to appro
 
 
 export const QUICK_ACTION_TOPICS = [
-    "I have a problem with my landlord.",
-    "My employer isn't paying me correctly.",
-    "I need information about divorce or child custody.",
-    "I'm facing debt collection issues.",
+    { text: "I have a problem with my landlord.", icon: "Landlord" },
+    { text: "My employer isn't paying me correctly.", icon: "Wage" },
+    { text: "I need information about divorce or child custody.", icon: "Family" },
+    { text: "I'm facing debt collection issues.", icon: "Debt" },
 ];
 
 export const CRISIS_RESOURCES = [

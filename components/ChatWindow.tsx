@@ -4,13 +4,20 @@ import { sendMessageStream } from '../services/geminiService';
 import Message from './Message';
 import QuickActionButton from './QuickActionButton';
 import CrisisButton from './CrisisButton';
-import { SendIcon } from './Icons';
+import { SendIcon, LandlordIcon, WageIcon, FamilyIcon, DebtIcon } from './Icons';
 import { CRISIS_RESOURCES } from '../constants';
 import { translations, Language } from '../i18n';
 
 interface ChatWindowProps {
     language: Language;
 }
+
+const iconMap: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
+    Landlord: LandlordIcon,
+    Wage: WageIcon,
+    Family: FamilyIcon,
+    Debt: DebtIcon
+};
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
     const t = translations[language];
@@ -91,7 +98,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
     };
     
     return (
-        <div className="flex flex-col h-full bg-slate-900">
+        <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto p-1 pr-4 space-y-6">
                 {messages.map((msg) => (
                     <Message key={msg.id} message={msg} />
@@ -103,7 +110,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
             </div>
 
             {showCrisisResources && (
-                <div className="p-4 border-t border-slate-700 bg-red-900/50">
+                <div className="p-4 border-t border-slate-700 bg-red-900/50 opacity-0 animate-fade-in-down">
                     <h3 className="text-lg font-bold text-red-300 mb-2">{t.crisisTitle}</h3>
                     <ul className="space-y-2">
                         {CRISIS_RESOURCES.map(resource => (
@@ -124,12 +131,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
             <div className="p-1 pt-4">
                 {messages.length <= 1 && (
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                        {t.quickActions.map((topic, index) => (
-                            <QuickActionButton key={index} text={topic} onClick={() => handleSend(topic)} />
-                        ))}
+                        {t.quickActions.map((topic, index) => {
+                            const IconComponent = iconMap[topic.icon];
+                            return (
+                                <div key={index} className={`opacity-0 animate-fade-in-down delay-${200 + index * 100}`}>
+                                    <QuickActionButton 
+                                        text={topic.text} 
+                                        Icon={IconComponent}
+                                        onClick={() => handleSend(topic.text)} 
+                                    />
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-slate-800 rounded-full p-2">
+                <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-slate-800 rounded-xl p-2">
                     <CrisisButton onClick={() => setShowCrisisResources(prev => !prev)} />
                     <input
                         type="text"
@@ -142,7 +158,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
                     <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="bg-slate-700 text-white p-3 rounded-full hover:bg-slate-600 disabled:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                        className="bg-slate-700 text-white p-3 rounded-full hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 data-[active=true]:bg-blue-600 data-[active=true]:hover:bg-blue-500"
+                        data-active={!isLoading && !!input.trim()}
                     >
                         <SendIcon className="w-5 h-5" />
                     </button>

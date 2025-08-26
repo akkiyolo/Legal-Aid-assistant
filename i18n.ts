@@ -8,7 +8,19 @@ export const languages: { code: Language; name: string }[] = [
     { code: 'hi', name: 'हिन्दी' },
 ];
 
-export const translations = {
+interface Translation {
+    title: string;
+    tagline: string;
+    disclaimerTitle: string;
+    disclaimerText: string;
+    initialMessage: string;
+    inputPlaceholder: string;
+    crisisTitle: string;
+    errorPrefix: string;
+    quickActions: { text: string; icon: string }[];
+}
+
+export const translations: Record<Language, Translation> = {
     en: {
         title: "Legal Aid Assistant",
         tagline: "Your First Step Towards Justice",
@@ -19,10 +31,10 @@ export const translations = {
         crisisTitle: "Immediate Help Resources",
         errorPrefix: "Error:",
         quickActions: [
-            "I have a problem with my landlord.",
-            "My employer isn't paying me correctly.",
-            "I need information about divorce or child custody.",
-            "I'm facing debt collection issues.",
+            { text: "I have a problem with my landlord.", icon: "Landlord" },
+            { text: "My employer isn't paying me correctly.", icon: "Wage" },
+            { text: "I need information about divorce or child custody.", icon: "Family" },
+            { text: "I'm facing debt collection issues.", icon: "Debt" },
         ],
     },
     es: {
@@ -35,10 +47,10 @@ export const translations = {
         crisisTitle: "Recursos de Ayuda Inmediata",
         errorPrefix: "Error:",
         quickActions: [
-            "Tengo un problema con mi arrendador.",
-            "Mi empleador no me está pagando correctamente.",
-            "Necesito información sobre divorcio o custodia de hijos.",
-            "Estoy enfrentando problemas de cobro de deudas.",
+            { text: "Tengo un problema con mi arrendador.", icon: "Landlord" },
+            { text: "Mi empleador no me está pagando correctamente.", icon: "Wage" },
+            { text: "Necesito información sobre divorcio o custodia de hijos.", icon: "Family" },
+            { text: "Estoy enfrentando problemas de cobro de deudas.", icon: "Debt" },
         ],
     },
     fr: {
@@ -51,10 +63,10 @@ export const translations = {
         crisisTitle: "Ressources d'Aide Immédiate",
         errorPrefix: "Erreur:",
         quickActions: [
-            "J'ai un problème avec mon propriétaire.",
-            "Mon employeur ne me paie pas correctement.",
-            "J'ai besoin d'informations sur le divorce ou la garde d'enfants.",
-            "Je fais face à des problèmes de recouvrement de créances.",
+            { text: "J'ai un problème avec mon propriétaire.", icon: "Landlord" },
+            { text: "Mon employeur ne me paie pas correctement.", icon: "Wage" },
+            { text: "J'ai besoin d'informations sur le divorce ou la garde d'enfants.", icon: "Family" },
+            { text: "Je fais face à des problèmes de recouvrement de créances.", icon: "Debt" },
         ],
     },
     zh: {
@@ -67,10 +79,10 @@ export const translations = {
         crisisTitle: "紧急帮助资源",
         errorPrefix: "错误:",
         quickActions: [
-            "我与房东有问题。",
-            "我的雇主没有正确支付我的工资。",
-            "我需要关于离婚或子女监护权的信息。",
-            "我正面临债务催收问题。",
+            { text: "我与房东有问题。", icon: "Landlord" },
+            { text: "我的雇主没有正确支付我的工资。", icon: "Wage" },
+            { text: "我需要关于离婚或子女监护权的信息。", icon: "Family" },
+            { text: "我正面临债务催收问题。", icon: "Debt" },
         ],
     },
     hi: {
@@ -83,10 +95,10 @@ export const translations = {
         crisisTitle: "तत्काल सहायता संसाधन",
         errorPrefix: "त्रुटि:",
         quickActions: [
-            "मुझे अपने मकान मालिक से समस्या है।",
-            "मेरा नियोक्ता मुझे सही तरीके से भुगतान नहीं कर रहा है।",
-            "मुझे तलाक या बच्चे की हिरासत के बारे में जानकारी चाहिए।",
-            "मैं कर्ज वसूली की समस्याओं का सामना कर रहा हूँ।",
+            { text: "मुझे अपने मकान मालिक से समस्या है।", icon: "Landlord" },
+            { text: "मेरा नियोक्ता मुझे सही तरीके से भुगतान नहीं कर रहा है।", icon: "Wage" },
+            { text: "मुझे तलाक या बच्चे की हिरासत के बारे में जानकारी चाहिए।", icon: "Family" },
+            { text: "मैं कर्ज वसूली की समस्याओं का सामना कर रहा हूँ।", icon: "Debt" },
         ],
     },
 };
