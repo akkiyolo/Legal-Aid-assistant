@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageType, MessageRole } from '../types';
 import { sendMessageStream } from '../services/geminiService';
@@ -129,41 +130,43 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ language }) => {
             )}
 
             <div className="p-1 pt-4">
-                {messages.length <= 1 && (
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                        {t.quickActions.map((topic, index) => {
-                            const IconComponent = iconMap[topic.icon];
-                            return (
-                                <div key={index} className={`opacity-0 animate-fade-in-down delay-${200 + index * 100}`}>
-                                    <QuickActionButton 
-                                        text={topic.text} 
-                                        Icon={IconComponent}
-                                        onClick={() => handleSend(topic.text)} 
-                                    />
-                                </div>
-                            )
-                        })}
-                    </div>
-                )}
-                <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-slate-800 rounded-xl p-2">
-                    <CrisisButton onClick={() => setShowCrisisResources(prev => !prev)} />
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={t.inputPlaceholder}
-                        className="flex-1 p-2 bg-transparent focus:outline-none text-slate-100 placeholder-slate-400"
-                        disabled={isLoading}
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading || !input.trim()}
-                        className="bg-slate-700 text-white p-3 rounded-full hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 data-[active=true]:bg-blue-600 data-[active=true]:hover:bg-blue-500"
-                        data-active={!isLoading && !!input.trim()}
-                    >
-                        <SendIcon className="w-5 h-5" />
-                    </button>
-                </form>
+                <div className="max-w-4xl mx-auto">
+                    {messages.length <= 1 && (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                            {t.quickActions.map((topic, index) => {
+                                const IconComponent = iconMap[topic.icon];
+                                return (
+                                    <div key={index} className={`opacity-0 animate-fade-in-down delay-${200 + index * 100}`}>
+                                        <QuickActionButton 
+                                            text={topic.text} 
+                                            Icon={IconComponent}
+                                            onClick={() => handleSend(topic.text)} 
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                    <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-slate-800 rounded-xl p-2">
+                        <CrisisButton onClick={() => setShowCrisisResources(prev => !prev)} />
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder={t.inputPlaceholder}
+                            className="flex-1 p-2 bg-transparent focus:outline-none text-slate-100 placeholder-slate-400"
+                            disabled={isLoading}
+                        />
+                        <button
+                            type="submit"
+                            disabled={isLoading || !input.trim()}
+                            className="bg-slate-700 text-white p-3 rounded-full hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 data-[active=true]:bg-blue-600 data-[active=true]:hover:bg-blue-500"
+                            data-active={!isLoading && !!input.trim()}
+                        >
+                            <SendIcon className="w-5 h-5" />
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );
